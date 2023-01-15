@@ -1,0 +1,12 @@
+Dependencies Needed
+	0Harmony.dll
+	Assembly-CSharp.dll
+	ModLoader.dll
+	UnityEngine.dll
+	UnityEngine.CoreModule.dll
+	UnityEngine.IMGUIModule.dll
+	UnityEngine.InputLegacyModule.dll
+	UnityEngine.UI.dll
+	TriquetraInteractions.dll (https://github.com/frdhog/TriquetraInteractions)
+	SharpDX.dll (renamed to 0SharpDX.dll)
+	SharpDX.DirectInput.dll

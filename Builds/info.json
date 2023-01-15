@@ -1,0 +1,22 @@
+{
+  "name": "TriquetraInput",
+  "description": "A mod to allow for DirectInput devices to control VR elements such as the joystick, throttle, flaps and so on",
+  "dll_file": "",
+  "last_edit": 638093889323521703,
+  "pub_id": "",
+  "json_version": "",
+  "version": "1.0.0",
+  "tagline": "",
+  "repository": "",
+  "is_public": false,
+  "unlisted": false,
+  "preview_image": "preview.png",
+  "web_preview_image": "web_preview.png",
+  "dependencies": [
+    "TriquetraInteractions.dll",
+    "0SharpDX.dll",
+    "SharpDX.DirectInput.dll"
+  ],
+  "mod_dependencies": null,
+  "ContentType": 3
+}
