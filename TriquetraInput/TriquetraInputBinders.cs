@@ -419,6 +419,19 @@ namespace Triquetra.Input
             {
                 showWindow = !showWindow;
             }
+
+            TriquetraInputJoysticks.PollActiveJoysticks();
+
+            if (TriquetraInput.IsFlyingScene())
+            {
+                ControllerActions.Joystick.UpdateStick();
+                if (TriquetraInput.IsFlyingScene())
+                {
+                    ControllerActions.Joystick.UpdateStick();
+                    ControllerActions.Joystick.UpdateThumbstick();
+                    ControllerActions.Throttle.UpdateThumbstick();
+                }
+            }
         }
 
         int frameCount = 0;
@@ -434,14 +447,6 @@ namespace Triquetra.Input
                 frameCount = 0;
                 TriquetraInputJoysticks.PopulateActiveJoysticks();
                 ControllerActions.TryGetSticks();
-            }
-            TriquetraInputJoysticks.PollActiveJoysticks();
-
-            if (TriquetraInput.IsFlyingScene())
-            {
-                ControllerActions.Joystick.UpdateStick();
-                ControllerActions.Joystick.UpdateThumbstick();
-                ControllerActions.Throttle.UpdateThumbstick();
             }
         }
     }

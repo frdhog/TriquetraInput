@@ -7,6 +7,8 @@
 
 Dependencies/*
 !Dependencies/instructions.txt
+Builds/*
+!Builds/info.json
 
 # User-specific files
 *.rsuser
