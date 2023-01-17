@@ -163,6 +163,7 @@ namespace Triquetra.Input
             public static bool ThumbstickDown = false;
             public static bool ThumbstickLeft = false;
             private static bool thumbstickWasZero = false;
+            private static bool thumbstickWasMoving = false;
             public static void UpdateThumbstick()
             {
                 if (throttle == null)
@@ -182,6 +183,7 @@ namespace Triquetra.Input
                 {
                     thumbstickWasZero = false;
                     throttle.OnSetThumbstick?.Invoke(vector);
+                    thumbstickWasMoving = true;
                 }
                 else
                 {
@@ -189,9 +191,13 @@ namespace Triquetra.Input
                     {
                         throttle.OnSetThumbstick?.Invoke(vector);
                         thumbstickWasZero = true;
+                        thumbstickWasMoving = true;
                     }
-                    else
+                    else if (thumbstickWasMoving)
+                    {
                         throttle.OnResetThumbstick?.Invoke();
+                        thumbstickWasMoving = false;
+                    }
                 }
             }
 
@@ -314,6 +320,7 @@ namespace Triquetra.Input
             public static bool ThumbstickDown = false;
             public static bool ThumbstickLeft = false;
             private static bool thumbstickWasZero = false;
+            private static bool thumbstickWasMoving = false;
             public static void UpdateThumbstick()
             {
                 if (joystick == null)
@@ -333,6 +340,7 @@ namespace Triquetra.Input
                 {
                     thumbstickWasZero = false;
                     joystick.OnSetThumbstick?.Invoke(vector);
+                    thumbstickWasMoving = true;
                 }
                 else
                 {
@@ -340,9 +348,13 @@ namespace Triquetra.Input
                     {
                         joystick.OnSetThumbstick?.Invoke(vector);
                         thumbstickWasZero = true;
+                        thumbstickWasMoving = true;
                     }
-                    else
+                    else if (thumbstickWasMoving)
+                    {
                         joystick.OnResetThumbstick?.Invoke();
+                        thumbstickWasMoving = false;
+                    }
                 }
             }
 
