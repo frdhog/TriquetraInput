@@ -124,6 +124,10 @@ namespace Triquetra.Input
                 {
                     ControllerActions.Throttle.SetThrottle(this, joystickValue);
                 }
+                else if (OutputAction == ControllerAction.HeloPower)
+                {
+                    ControllerActions.Helicopter.SetPower(this, joystickValue);
+                }
                 else if (OutputAction == ControllerAction.Pitch)
                 {
                     ControllerActions.Joystick.SetPitch(this, joystickValue);

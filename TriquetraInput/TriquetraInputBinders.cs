@@ -9,15 +9,17 @@ using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 // TODO: Jettison button requires push in (menu button)
+// TODO: Fix DDArmory bug where swept wings are used as throttle instead of real throttle
 // TODO?: duplicate binding
 // TODO?: XInput
 // TODO?: Lock hand position to joystick
+// TODO?: Non 1:1 bindings, being able to set limits and saturation
 
 namespace Triquetra.Input
 {
     public class TriquetraInputBinders : MonoBehaviour
     {
-        public List<POVFacing> POVDirections = new List<POVFacing>() { POVFacing.Up, POVFacing.Right, POVFacing.Down, POVFacing.Left}; // TODO fix/unify
+        public List<POVFacing> POVDirections = new List<POVFacing>() { POVFacing.Up, POVFacing.Right, POVFacing.Down, POVFacing.Left }; // TODO fix/unify
 
         public bool showWindow = true;
         private Rect windowRect = new Rect(Screen.width - 525, 25, 500, Screen.height - 75);
@@ -66,7 +68,7 @@ namespace Triquetra.Input
             {
                 if (GUILayout.Button("Collapse All"))
                 {
-                    foreach(Binding binding in Binding.Bindings)
+                    foreach (Binding binding in Binding.Bindings)
                     {
                         collapsedBindings[binding] = true;
                     }
@@ -425,12 +427,8 @@ namespace Triquetra.Input
             if (TriquetraInput.IsFlyingScene())
             {
                 ControllerActions.Joystick.UpdateStick();
-                if (TriquetraInput.IsFlyingScene())
-                {
-                    ControllerActions.Joystick.UpdateStick();
-                    ControllerActions.Joystick.UpdateThumbstick();
-                    ControllerActions.Throttle.UpdateThumbstick();
-                }
+                ControllerActions.Joystick.UpdateThumbstick();
+                ControllerActions.Throttle.UpdateThumbstick();
             }
         }
 

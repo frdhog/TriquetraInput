@@ -13,6 +13,7 @@ namespace Triquetra.Input
     {
         None,
         Throttle,
+        HeloPower,
         Pitch,
         Yaw,
         Roll,
@@ -103,7 +104,26 @@ namespace Triquetra.Input
             }
         }
 
-        public static class Throttle
+        public static class Helicopter
+        {
+            internal static VRThrottle power;
+            public static void SetPower(Binding binding, int joystickValue)
+            {
+                if (power == null)
+                    power = FindThrottle();
+                if (power == null)
+                    return;
+
+                Interactions.SetThrottle(power, binding.GetAxisAsFloat(joystickValue));
+            }
+
+            internal static VRThrottle FindThrottle()
+            {
+                return GameObject.FindObjectsOfType<VRThrottle>(false).Where(t => t.interactable?.interactableName == "Power").FirstOrDefault();
+            }
+        }
+
+            public static class Throttle
         {
             internal static VRThrottle throttle;
             public static void SetThrottle(Binding binding, int joystickValue)
