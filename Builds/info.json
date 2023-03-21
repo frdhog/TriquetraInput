@@ -1,11 +1,11 @@
 {
   "name": "TriquetraInput",
-  "description": "A mod to allow for DirectInput devices to control VR elements such as the joystick, throttle, flaps and so on",
+  "description": "A mod to allow for DirectInput devices or the keyboard to control VR elements such as the joystick, throttle, flaps and so on",
   "dll_file": "TriquetraInput.dll",
   "last_edit": 638093889323521703,
   "pub_id": "",
   "json_version": "",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "tagline": "DirectInput joystick support for VTOL VR",
   "repository": "",
   "is_public": false,

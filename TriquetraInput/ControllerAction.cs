@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using VTOLVR.Multiplayer;
-using static Triquetra.Input.ControllerActions;
 
 namespace Triquetra.Input
 {
@@ -117,13 +116,21 @@ namespace Triquetra.Input
                 Interactions.SetThrottle(power, binding.GetAxisAsFloat(joystickValue));
             }
 
+            public static void MoveThrottle(Binding binding, int joystickValue, float delta)
+            {
+                if (power == null)
+                    return;
+
+                Interactions.MoveThrottle(power, (float)Math.Round(binding.GetAxisAsFloat(joystickValue) - 0.5f, 1) * delta);
+            }
+
             internal static VRThrottle FindThrottle()
             {
                 return GameObject.FindObjectsOfType<VRThrottle>(false).Where(t => t.interactable?.interactableName == "Power").FirstOrDefault();
             }
         }
 
-            public static class Throttle
+        public static class Throttle
         {
             internal static VRThrottle throttle;
             public static void SetThrottle(Binding binding, int joystickValue)
@@ -132,6 +139,14 @@ namespace Triquetra.Input
                     return;
 
                 Interactions.SetThrottle(throttle, binding.GetAxisAsFloat(joystickValue));
+            }
+
+            public static void MoveThrottle(Binding binding, int joystickValue, float delta)
+            {
+                if (throttle == null)
+                    return;
+
+                Interactions.MoveThrottle(throttle, (float)Math.Round(binding.GetAxisAsFloat(joystickValue) - 0.5f, 1) * delta);
             }
 
             private static bool triggerPressed = false;
@@ -271,7 +286,7 @@ namespace Triquetra.Input
         public static class Joystick
         {
             internal static VRJoystick joystick;
-            private static Vector3 stickVector = new Vector3(0,0,0);
+            private static Vector3 stickVector = new Vector3(0, 0, 0);
             public static void SetPitch(Binding binding, int joystickValue)
             {
                 stickVector.x = binding.GetAxisAsFloat(joystickValue) - 0.5f;

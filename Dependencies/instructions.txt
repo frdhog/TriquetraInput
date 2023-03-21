@@ -7,6 +7,7 @@ Dependencies Needed
 	UnityEngine.IMGUIModule.dll
 	UnityEngine.InputLegacyModule.dll
 	UnityEngine.UI.dll
+	UnityEngine.UIElementsModule.dll
 	TriquetraInteractions.dll (https://github.com/frdhog/TriquetraInteractions)
 	SharpDX.dll (renamed to 0SharpDX.dll)
 	SharpDX.DirectInput.dll

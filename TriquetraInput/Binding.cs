@@ -24,6 +24,8 @@ namespace Triquetra.Input
         public static DirectInput directInput = new DirectInput();
 
         public string Name = "New Binding";
+
+        [XmlIgnore] public bool IsKeyboard { get; internal set; } = false;
         [XmlIgnore] public TriquetraJoystick Controller;
         public JoystickOffset Offset;
         [XmlIgnore] public int RawOffset => (int)Offset;
@@ -34,6 +36,7 @@ namespace Triquetra.Input
         public ControllerAction OutputAction = ControllerAction.None;
         public ThumbstickDirection ThumbstickDirection = ThumbstickDirection.None;
         public string VRInteractName = "";
+        public KeyboardKey KeyboardKey;
         [XmlIgnore] public DeviceInstance JoystickDevice;
 
         // For the Xml Serialize/Deserialize
@@ -41,10 +44,20 @@ namespace Triquetra.Input
         {
             get
             {
-                return Controller?.Information.ProductGuid.ToString() ?? "";
+                if (IsKeyboard)
+                    return "keyboard";
+                else
+                    return Controller?.Information.ProductGuid.ToString() ?? "";
             }
             set
             {
+                if (value == "keyboard")
+                {
+                    IsKeyboard = true;
+                    return;
+                }
+                IsKeyboard = false;
+
                 DeviceInstance device = directInput.GetDevices().Where(x => IsJoystick(x)).FirstOrDefault(x => x.ProductGuid.ToString() == value);
                 if (device == null)
                     return;
@@ -58,8 +71,8 @@ namespace Triquetra.Input
         public static bool IsPOV(int offset) => offset >= (int)JoystickOffset.PointOfViewControllers0 && offset <= (int)JoystickOffset.PointOfViewControllers3;
         public static bool IsAxis(int offset) => !IsButton(offset) && !IsPOV(offset);
 
-        [XmlIgnore] public bool IsOffsetButton => RawOffset >= (int)JoystickOffset.Buttons0 && RawOffset <= (int)JoystickOffset.Buttons127;
-        [XmlIgnore] public bool IsOffsetPOV => RawOffset >= (int)JoystickOffset.PointOfViewControllers0 && RawOffset <= (int)JoystickOffset.PointOfViewControllers3;
+        [XmlIgnore] public bool IsOffsetButton => (IsKeyboard && !KeyboardKey.IsAxis) || RawOffset >= (int)JoystickOffset.Buttons0 && RawOffset <= (int)JoystickOffset.Buttons127;
+        [XmlIgnore] public bool IsOffsetPOV => !IsKeyboard && RawOffset >= (int)JoystickOffset.PointOfViewControllers0 && RawOffset <= (int)JoystickOffset.PointOfViewControllers3;
         [XmlIgnore] public bool IsOffsetAxis => !IsOffsetButton && !IsOffsetPOV;
 
         [XmlIgnore] public bool OffsetSelectOpen = false;
@@ -75,10 +88,24 @@ namespace Triquetra.Input
         {
             NextJoystick();
         }
+        public Binding(bool isKeyboard)
+        {
+            if (isKeyboard)
+            {
+                IsKeyboard = true;
+                AxisCentering = AxisCentering.Middle;
+                KeyboardKey = new KeyboardKey();
+            }
+            else
+                NextJoystick();
+        }
 
         private int currentJoystickIndex = -1;
         public void NextJoystick()
         {
+            if (IsKeyboard)
+                return;
+
             List<DeviceInstance> devices = directInput.GetDevices().Where(x => IsJoystick(x)).ToList();
             if (devices.Count == 0)
             {
@@ -91,6 +118,9 @@ namespace Triquetra.Input
         }
         public void PrevJoystick()
         {
+            if (IsKeyboard)
+                return;
+
             List<DeviceInstance> devices = directInput.GetDevices().Where(x => IsJoystick(x)).ToList();
             if (devices.Count == 0)
             {
@@ -122,11 +152,17 @@ namespace Triquetra.Input
             {
                 if (OutputAction == ControllerAction.Throttle)
                 {
-                    ControllerActions.Throttle.SetThrottle(this, joystickValue);
+                    if (IsKeyboard)
+                        ControllerActions.Throttle.MoveThrottle(this, joystickValue, 0.025f);
+                    else
+                        ControllerActions.Throttle.SetThrottle(this, joystickValue);
                 }
                 else if (OutputAction == ControllerAction.HeloPower)
                 {
-                    ControllerActions.Helicopter.SetPower(this, joystickValue);
+                    if (IsKeyboard)
+                        ControllerActions.Throttle.MoveThrottle(this, joystickValue, 0.025f);
+                    else
+                        ControllerActions.Helicopter.SetPower(this, joystickValue);
                 }
                 else if (OutputAction == ControllerAction.Pitch)
                 {
@@ -268,6 +304,42 @@ namespace Triquetra.Input
                     return false;
             }
             return false;
+        }
+
+        public void HandleKeyboardKeys()
+        {
+            if (KeyboardKey.IsAxis)
+            {
+                int translatedValue = KeyboardKey.GetAxisTranslatedValue();
+
+                RunAction(translatedValue);
+            }
+            else // Is Button
+            {
+                if (KeyboardKey.IsRepeatButton)
+                {
+                    bool pressed = UnityEngine.Input.GetKeyDown(KeyboardKey.PrimaryKey);
+                    int translatedValue = pressed ? ButtonMax : ButtonMin;
+                    RunAction(translatedValue);
+                }
+                else
+                {
+                    bool pressed = UnityEngine.Input.GetKeyDown(KeyboardKey.PrimaryKey);
+                    bool released = UnityEngine.Input.GetKeyUp(KeyboardKey.PrimaryKey);
+                    int translatedValue = pressed ? ButtonMax : ButtonMin;
+
+                    if (pressed && !KeyboardKey.PrimaryKeyDown)
+                    {
+                        KeyboardKey.PrimaryKeyDown = true;
+                        RunAction(translatedValue);
+                    }
+                    else if (released)
+                    {
+                        KeyboardKey.PrimaryKeyDown = false;
+                        RunAction(translatedValue);
+                    }
+                }
+            }
         }
     }
 
